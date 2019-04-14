@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+    <title>Task manager</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/js/bootstrap-datetimepicker.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/css/bootstrap-datetimepicker.min.css">
+
+    <style>
+        #new-task {
+            position: relative;
+            border: solid 1px gray;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            background: aliceblue;
+        }
+
+        .task {
+            float: left;
+            width: 240px;
+            border: solid 1px gray;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px;
+            text-align: center;
+            background: #fcfcfc;
+            box-shadow: 2px 2px 2px rgba(0,0,0,.1);
+        }
+
+        .task-title {
+            font-weight: bold;
+            font-size: 15px;
+            border-bottom: solid 1px #d5d5d5;
+            padding: 0 0 5px 0;
+            margin-bottom: 16px;
+        }
+
+        .task-start-date {
+            color: #c4c4c4;
+            font-size: 10px;
+        }
+
+        .task-times {
+            padding-top: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div id="new-task">
+        <b>Add a new task:</b>
+        <input id="title" placeholder="Task Title">
+        <input id="start" placeholder="Start Time">
+        <input id="end" placeholder="End Time">
+        <input type="button" value="Add" id="add">
+    </div>
+    <div id="tasks"></div>
+    <script>
+        $(function() {
+            $('#start, #end').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+            loadTasks();
+
+            $("#add").click(function () {
+                var data = {
+                    title: $("#title").val(),
+                    start: $("#start").val(),
+                    end: $("#end").val()
+                };
+                $.ajax({
+                    url: "/tasks/add",
+                    method: "post",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (data) {
+                        loadTasks();
+                    },
+                    error: function () {
+                        alert("An error occurred");
+                    }
+                });
+            })
+        });
+
+        function loadTasks() {
+            $.getJSON("/tasks/list", function (data) {
+                $("#tasks").empty();
+                for (var i = 0; i < data.tasks.length; i++) {
+                    var task = data.tasks[i];
+                    $("#tasks").append("<div class='task'>" +
+                        "<div class='task-title'>" + task.title + "</div>" +
+                        "<div class='task-start-date'>" + task.startDate + "</div>" +
+                        "<div class='task-times'>" + task.startTime + " > " + task.endTime + "</div>" +
+                        "<button class='task-times' onclick='deleteTask(" + task.id + ")'>Delete</button>" +
+                        "</div>"
+                    );
+                }
+            });
+        }
+
+        function deleteTask(id) {
+            var data = {
+                id: id
+            };
+            $.ajax({
+                url: "/tasks/remove",
+                method: "post",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                success: function (data) {
+                    loadTasks();
+                },
+                error: function () {
+                    alert("An error occurred");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
