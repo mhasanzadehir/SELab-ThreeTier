@@ -5,10 +5,9 @@ import selab.threetier.storage.Storage;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
-public class Task extends Entity {
+public class Task extends Entity implements Comparable {
     private String title;
     private Date start;
     private Date end;
@@ -51,12 +50,30 @@ public class Task extends Entity {
                 .anyMatch(task -> ((task.start.after(start) || task.start.equals(start)) && task.start.before(end))
                         || ((task.end.before(end) || task.end.equals(end)) && task.end.after(start)));
         if (existOverlap) {
-            throw new IOException("Overlap task added");
+            throw new IOException("Overlap task");
         }
         tasks.addOrUpdate(this);
     }
 
     public static ArrayList<Task> getAll() {
         return Storage.getInstance().getTasks().getAll();
+    }
+
+    public static ArrayList<Task> getAllSorted() {
+        ArrayList<Task> tasks = getAll();
+        Collections.sort(tasks);
+        return tasks;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Task second = ((Task) o);
+        if (start.equals(second.start)){
+            return 0;
+        } else if (start.before(second.start)){
+            return -1;
+        } else {
+            return 1;
+        }
     }
 }
