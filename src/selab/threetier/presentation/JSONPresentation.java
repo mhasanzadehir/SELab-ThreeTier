@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+
 import org.json.*;
 
 public abstract class JSONPresentation extends Presentation {

@@ -5,7 +5,6 @@ import selab.threetier.storage.Storage;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.SimpleFormatter;
 
 public class Task extends Entity {
     private String title;

@@ -2,6 +2,7 @@ package selab.threetier.presentation;
 
 import org.json.JSONObject;
 import selab.threetier.logic.Task;
+import selab.threetier.storage.Storage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +25,10 @@ public class RemoveTaskPresentation extends JSONPresentation {
 
         int id = request.getInt("id");
 
-        // TODO: Add codes here to delete a task with the id
-        return null;
+        Storage.getInstance().getTasks().remove(id);
+
+        Map<String, String> result = new HashMap<>();
+        result.put("success", "true");
+        return new JSONObject(result);
     }
 }
